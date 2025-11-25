@@ -1,0 +1,28 @@
+{
+  "solidity.defaultCompiler": "remote",
+  "solidity.compileUsingRemoteVersion": "0.8.25",
+  "solidity.remappings": [
+    "@openzeppelin/=contracts/lib/openzeppelin-contracts/",
+    "forge-std/=contracts/lib/forge-std/src/"
+  ],
+  "solidity.packageDefaultDependenciesDirectory": "lib",
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/node_modules": true,
+    "**/out": true,
+    "**/cache": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/out": true,
+    "**/cache": true,
+    "**/lib": true
+  },
+  "[solidity]": {
+    "editor.defaultFormatter": "JuanBlanco.solidity",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 4
+  }
+}
+
