@@ -323,20 +323,47 @@ fi
 echo ""
 echo -e "${BLUE}🌐 Iniciando frontend en puerto $FRONTEND_PORT...${NC}"
 cd "$FRONTEND_DIR"
+
+# Configurar variable de entorno para mejorar estabilidad de WebSocket
+export WATCHPACK_POLLING=true
+export NEXT_TELEMETRY_DISABLED=1
+
+# Iniciar Next.js con configuración mejorada para WebSocket
 npm run dev > /tmp/frontend_dao.log 2>&1 &
 FRONTEND_PID=$!
 
-# Esperar a que el frontend esté listo
+# Esperar a que el frontend esté listo (incluyendo WebSocket/HMR)
 echo -n "   Esperando a que el frontend esté listo"
-for i in {1..30}; do
+FRONTEND_READY=false
+for i in {1..60}; do
     if curl -s "http://localhost:$FRONTEND_PORT" > /dev/null 2>&1; then
-        echo ""
-        echo -e "${GREEN}✅ Frontend está listo${NC}"
-        break
+        # Esperar más tiempo para que WebSocket/HMR esté completamente inicializado
+        sleep 3
+        # Verificar que el proceso sigue corriendo
+        if kill -0 "$FRONTEND_PID" 2>/dev/null; then
+            echo ""
+            echo -e "${GREEN}✅ Frontend está listo${NC}"
+            FRONTEND_READY=true
+            break
+        fi
     fi
     echo -n "."
     sleep 1
 done
+
+# Verificar que el proceso sigue corriendo
+if ! kill -0 "$FRONTEND_PID" 2>/dev/null; then
+    echo ""
+    echo -e "${RED}❌ Error: El frontend se detuvo inesperadamente${NC}"
+    echo -e "${YELLOW}   Revisa los logs: tail -f /tmp/frontend_dao.log${NC}"
+    exit 1
+fi
+
+if [ "$FRONTEND_READY" = false ]; then
+    echo ""
+    echo -e "${YELLOW}⚠️  El frontend puede no estar completamente listo${NC}"
+    echo -e "${YELLOW}   Espera unos segundos más antes de abrir el navegador${NC}"
+fi
 
 # Verificar y liberar puerto 3001 para backend
 if lsof -ti:$BACKEND_PORT > /dev/null 2>&1; then
@@ -403,6 +430,13 @@ if [ -n "$BACKEND_PID" ]; then
         echo -e "   ${BLUE}Daemon:${NC} tail -f /tmp/daemon_dao.log"
     fi
 fi
+echo ""
+echo -e "${YELLOW}⚠️  Nota sobre WebSocket/HMR:${NC}"
+echo -e "   ${YELLOW}Si ves el error 'Connection interrupted while trying to subscribe' en la consola del navegador,${NC}"
+echo -e "   ${YELLOW}esto es un problema conocido de Next.js 15 cuando se ejecuta en background.${NC}"
+echo -e "   ${YELLOW}La aplicación funciona correctamente a pesar de este error.${NC}"
+echo -e "   ${YELLOW}Para evitar este error, puedes iniciar el frontend manualmente:${NC}"
+echo -e "   ${BLUE}   bash scripts/start-frontend.sh${NC}"
 echo ""
 echo -e "${YELLOW}💡 Presiona Ctrl+C para detener todos los servicios${NC}"
 echo ""
