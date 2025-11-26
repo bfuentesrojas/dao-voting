@@ -5,6 +5,7 @@ import { CONTRACT_ADDRESSES } from "@/lib/config";
 import { formatEther, parseEther } from "ethers";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
+import type { ForwardRequest } from "@/lib/metaTx";
 
 export function useUserBalance() {
   const { address } = useAccount();
@@ -190,7 +191,7 @@ export function useCreateProposal() {
       try {
         // Importar dinámicamente para evitar problemas de SSR
         const { ethers } = await import("ethers");
-        const { relayMetaTx, ForwardRequest } = await import("@/lib/metaTx");
+        const { relayMetaTx } = await import("@/lib/metaTx");
         const { signWithEthers } = await import("@/lib/signing");
         const { getForwarderContract, getDAOContract } = await import("@/lib/contracts");
         const { CONTRACT_ADDRESSES } = await import("@/lib/config");
@@ -366,7 +367,7 @@ export function useVote() {
 
       // Importar dinámicamente para evitar problemas de SSR
       const { ethers } = await import("ethers");
-      const { relayMetaTx, ForwardRequest } = await import("@/lib/metaTx");
+      const { relayMetaTx } = await import("@/lib/metaTx");
       const { signWithEthers } = await import("@/lib/signing");
       const { getForwarderContract, getDAOContract } = await import("@/lib/contracts");
       const { CONTRACT_ADDRESSES } = await import("@/lib/config");

@@ -103,16 +103,5 @@ export function useWallet() {
   };
 }
 
-// Extender Window interface para TypeScript
-declare global {
-  interface Window {
-    ethereum?: {
-      on: (event: string, handler: (...args: any[]) => void) => void;
-      removeListener: (event: string, handler: (...args: any[]) => void) => void;
-      request: (args: { method: string; params?: any[] }) => Promise<any>;
-    };
-  }
-}
-
 
 

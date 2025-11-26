@@ -89,7 +89,8 @@ export async function signWithMetaMask(
     // Usar TypedDataEncoder de ethers.js para validar el formato
     // Esto asegura que el formato sea exactamente el mismo que espera el contrato
     const encoder = new TypedDataEncoder(types);
-    const hash = encoder.hash(domain, message);
+    // En ethers v6, hash() solo acepta el message, el domain se pasa en el constructor o se usa hashStruct
+    const hash = encoder.hashStruct("ForwardRequest", message);
     
     console.log("Hash EIP-712 generado:", hash);
 

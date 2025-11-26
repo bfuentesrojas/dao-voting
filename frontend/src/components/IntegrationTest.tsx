@@ -22,6 +22,7 @@ interface TestStep {
     votesFor?: number;
     votesAgainst?: number;
     timestamp?: string;
+    note?: string;
   };
 }
 
